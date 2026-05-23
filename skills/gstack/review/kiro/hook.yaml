@@ -1,0 +1,14 @@
+# Source: https://github.com/garrytan/gstack — review skill hook
+# Version: 1.0.0
+name: review-on-agent-start
+description: Remind the agent to run a pre-landing review when starting work on a PR or merge task.
+
+on:
+  - agentHookStart
+
+instructions: |
+  If the user's request involves merging, creating a PR, or shipping code,
+  remind them: "Before merging, run a pre-landing review. Tell me 'review this PR'
+  to check the diff against the project's review checklist."
+  Only show this reminder if the user's message contains words like: merge, PR,
+  pull request, ship, deploy, push to main. Do not show it for other requests.
