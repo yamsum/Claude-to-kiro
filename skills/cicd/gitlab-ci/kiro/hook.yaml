@@ -1,0 +1,19 @@
+# Source: https://github.com/yamsum/claude-to-kiro — cicd/gitlab-ci hook
+# Version: 1.0.0
+name: gitlab-ci-lint-on-change
+description: Suggest linting when GitLab CI YAML files change.
+
+on:
+  - fileChanged
+
+trigger:
+  paths:
+    - "**/.gitlab-ci.yml"
+    - "**/gitlab-ci/**/*.yml"
+    - "**/gitlab-ci/**/*.yaml"
+
+instructions: |
+  A GitLab CI configuration file was just modified.
+  You may proactively note: "GitLab CI YAML changed. Want me to review it
+  for DAG correctness, variable security, and deprecated syntax?"
+  Do not run the full review automatically — wait for the user to ask.

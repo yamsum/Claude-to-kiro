@@ -8,6 +8,8 @@ Claude Code ships with a powerful skill system — markdown-based instruction do
 
 ## Skills Catalog
 
+### General Skills
+
 | Skill | Source | Kiro | VS Code | Description |
 |-------|--------|------|---------|-------------|
 | [graphify](skills/graphify/) | [safishamsi/graphify](https://github.com/safishamsi/graphify) | ✅ steering + hook | ✅ task | Build a queryable knowledge graph from your codebase |
@@ -17,6 +19,15 @@ Claude Code ships with a powerful skill system — markdown-based instruction do
 | [qa](skills/gstack/qa/) | [garrytan/gstack](https://github.com/garrytan/gstack) | ✅ steering | ✅ task | Systematic QA with bug triage and regression tests |
 | [investigate](skills/gstack/investigate/) | [garrytan/gstack](https://github.com/garrytan/gstack) | ✅ steering | — | Root-cause debugging with scope isolation |
 | [ship](skills/gstack/ship/) | [garrytan/gstack](https://github.com/garrytan/gstack) | ✅ steering | — | Release management: test → review → deploy → verify |
+
+### CI/CD Skills (Jenkins + GitLab CI)
+
+| Skill | Kiro | VS Code | Description |
+|-------|------|---------|-------------|
+| [cicd/groovy-review](skills/cicd/groovy-review/) | ✅ steering + hook | ✅ copilot | Jenkins Groovy: CPS, credential exposure, sandbox, serialization |
+| [cicd/pipeline-debug](skills/cicd/pipeline-debug/) | ✅ steering | — | Classify and diagnose failing Jenkins/GitLab CI stages |
+| [cicd/gitlab-ci](skills/cicd/gitlab-ci/) | ✅ steering + hook | ✅ copilot + task | GitLab CI YAML review: DAG, variables, artifacts, deprecated syntax |
+| [cicd/shared-library](skills/cicd/shared-library/) | ✅ steering | — | Shared library impact analysis, versioning, blast radius |
 
 ## Quick Start
 
@@ -57,23 +68,33 @@ cp .vscode/tasks.json your-project/.vscode/tasks.json
 
 ```
 Claude-to-kiro/
-├── docs/                          # Format references and methodology
-│   ├── adaptation-methodology.md  # How Claude skills → Kiro/VS Code
-│   ├── kiro-format-reference.md   # Kiro steering + hook schemas
-│   └── vscode-format-reference.md # Copilot instructions + tasks
-├── .kiro/steering/                # Kiro steering docs for this meta-repo
+├── docs/
+│   ├── adaptation-methodology.md   # How Claude skills → Kiro/VS Code
+│   ├── kiro-format-reference.md    # Kiro steering + hook schemas
+│   ├── vscode-format-reference.md  # Copilot instructions + tasks reference
+│   └── worktree-workflow.md        # Worktree guide for VS Code + Kiro
+├── .kiro/steering/                 # Kiro steering docs for this meta-repo
 ├── .github/copilot-instructions.md # Aggregated VS Code Copilot context
-├── .vscode/tasks.json             # Aggregated VS Code tasks
-├── skills/                        # One directory per adapted skill
+├── .vscode/tasks.json              # Aggregated VS Code tasks
+├── skills/
 │   ├── graphify/
 │   ├── memory/
-│   └── gstack/
-│       ├── review/
-│       ├── security/
-│       ├── qa/
-│       ├── investigate/
-│       └── ship/
-└── templates/                     # Add a new skill from scratch
+│   ├── gstack/
+│   │   ├── review/
+│   │   ├── security/
+│   │   ├── qa/
+│   │   ├── investigate/
+│   │   └── ship/
+│   └── cicd/                       # CI/CD-specific skills
+│       ├── groovy-review/
+│       ├── pipeline-debug/
+│       ├── gitlab-ci/
+│       └── shared-library/
+└── templates/
+    ├── NEW-SKILL.md
+    ├── kiro-steering-template.md
+    ├── kiro-hook-template.yaml
+    └── cicd-workspace.code-workspace  # Multi-root workspace template
 ```
 
 ## Adding New Skills
@@ -86,6 +107,16 @@ The general pattern:
 3. Create a Kiro steering doc and/or hook
 4. Create VS Code tasks or Copilot instructions where relevant
 5. Add an entry to this catalog
+
+## Worktree Workflow
+
+For teams working on multiple pipeline branches simultaneously, see [docs/worktree-workflow.md](docs/worktree-workflow.md). It covers:
+
+- Setting up git worktrees for a CI/CD repo (no re-cloning)
+- VS Code 1.103+ native worktree support and multi-root workspaces
+- Kiro Autonomous Agent with parallel task execution across worktrees
+- Shell function `new-cicd-worktree` to create a pre-configured worktree in one command
+- Multi-root workspace template at `templates/cicd-workspace.code-workspace`
 
 ## Sources
 

@@ -1,7 +1,7 @@
 # Review Checklist
 
 <!-- Source: https://github.com/garrytan/gstack — review/checklist.md -->
-<!-- Version: 1.0.0 -->
+<!-- Version: 1.1.0 — added Groovy/YAML CI/CD sections -->
 
 Reference checklist used by the review steering doc and Copilot instructions. Edit this file to tune what gets flagged in your project.
 
@@ -63,3 +63,27 @@ Reference checklist used by the review steering doc and Copilot instructions. Ed
 - [ ] New dependencies vetted (license, security, size impact on bundle)
 - [ ] No secrets or API keys committed (even in comments)
 - [ ] Build output (`dist/`) not committed to source control
+
+## Jenkins Groovy Checks
+
+(For Jenkinsfile or shared library reviews — see `cicd/groovy-review` for the full skill)
+
+- [ ] No `"${env.SECRET}"` string interpolation inside `sh()` — use `withCredentials()` binding with single-quoted strings
+- [ ] Methods using `.stream()`, `.filter()`, `.collect()`, or Groovy closures passed to non-pipeline methods are annotated `@NonCPS`
+- [ ] `JsonSlurper` not used at pipeline scope — use `JsonSlurperClassic` (serializable)
+- [ ] No `System.*`, `Runtime.exec()`, `new File(...)`, or reflection in sandbox-restricted pipelines
+- [ ] Declarative pipelines have `timeout()` in `options {}` — missing timeout = runaway build
+- [ ] Shared library changes: backward-compatible (no removed/renamed params)
+- [ ] Shared library changes: blast radius assessed (branch-pinned vs tag-pinned consumers)
+
+## GitLab CI YAML Checks
+
+(For `.gitlab-ci.yml` reviews — see `cicd/gitlab-ci` for the full skill)
+
+- [ ] Every job's `stage:` is defined in the top-level `stages:` list
+- [ ] Every `needs:` reference names a real job; no `needs:` pointing to `when: manual` jobs
+- [ ] No `only:/except:` syntax — use `rules:` instead
+- [ ] No plaintext secrets in `variables:` — all via CI/CD project/group variables (masked + protected)
+- [ ] Docker images pinned to a version tag or digest — not `latest`
+- [ ] `cache:key:` defined to prevent cross-branch cache pollution
+- [ ] `artifacts:expire_in:` set on all artifact-producing jobs

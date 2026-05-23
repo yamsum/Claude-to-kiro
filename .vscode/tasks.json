@@ -5,90 +5,105 @@
       "label": "Graphify: Build Knowledge Graph",
       "type": "shell",
       "command": "python -m graphify .",
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
+      "options": { "cwd": "${workspaceFolder}" },
       "group": "build",
-      "presentation": {
-        "reveal": "always",
-        "panel": "new",
-        "clear": true
-      },
+      "presentation": { "reveal": "always", "panel": "new", "clear": true },
       "problemMatcher": []
     },
     {
       "label": "Graphify: Update Knowledge Graph",
       "type": "shell",
       "command": "python -m graphify . --update",
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
+      "options": { "cwd": "${workspaceFolder}" },
       "group": "build",
-      "presentation": {
-        "reveal": "always",
-        "panel": "shared",
-        "clear": false
-      },
+      "presentation": { "reveal": "always", "panel": "shared", "clear": false },
       "problemMatcher": []
     },
     {
       "label": "QA: Unit Tests",
       "type": "shell",
       "command": "ng test --no-watch --code-coverage",
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "group": {
-        "kind": "test",
-        "isDefault": true
-      },
-      "presentation": {
-        "reveal": "always",
-        "panel": "new",
-        "clear": true
-      },
+      "options": { "cwd": "${workspaceFolder}" },
+      "group": { "kind": "test", "isDefault": true },
+      "presentation": { "reveal": "always", "panel": "new", "clear": true },
       "problemMatcher": []
     },
     {
       "label": "QA: E2E Tests",
       "type": "shell",
       "command": "ng e2e",
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
+      "options": { "cwd": "${workspaceFolder}" },
       "group": "test",
-      "presentation": {
-        "reveal": "always",
-        "panel": "new",
-        "clear": true
-      },
+      "presentation": { "reveal": "always", "panel": "new", "clear": true },
       "problemMatcher": []
     },
     {
-      "label": "QA: Lint",
+      "label": "QA: Lint (Angular)",
       "type": "shell",
       "command": "ng lint",
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
+      "options": { "cwd": "${workspaceFolder}" },
       "group": "test",
-      "presentation": {
-        "reveal": "always",
-        "panel": "shared",
-        "clear": false
-      },
+      "presentation": { "reveal": "always", "panel": "shared", "clear": false },
       "problemMatcher": ["$eslint-compact"]
     },
     {
-      "label": "QA: Full Suite",
-      "dependsOn": ["QA: Lint", "QA: Unit Tests"],
+      "label": "QA: Full Suite (Angular)",
+      "dependsOn": ["QA: Lint (Angular)", "QA: Unit Tests"],
       "dependsOrder": "sequence",
       "group": "test",
-      "presentation": {
-        "reveal": "always",
-        "panel": "new"
-      },
+      "presentation": { "reveal": "always", "panel": "new" },
       "problemMatcher": []
+    },
+    {
+      "label": "Jenkins: Lint Declarative Jenkinsfile",
+      "type": "shell",
+      "command": "java -jar ${env:JENKINS_CLI_JAR} -s ${env:JENKINS_URL} declarative-linter < ${file}",
+      "group": "test",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "problemMatcher": []
+    },
+    {
+      "label": "Jenkins: Groovy Syntax Check (active file)",
+      "type": "shell",
+      "command": "groovy -c ${file}",
+      "group": "test",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "problemMatcher": []
+    },
+    {
+      "label": "Jenkins: Run Shared Library Tests",
+      "type": "shell",
+      "command": "./gradlew test",
+      "options": { "cwd": "${workspaceFolder}/jenkins/shared-library" },
+      "group": "test",
+      "presentation": { "reveal": "always", "panel": "new", "clear": true },
+      "problemMatcher": []
+    },
+    {
+      "label": "GitLab CI: Lint via API",
+      "type": "shell",
+      "command": "curl -s --header \"PRIVATE-TOKEN: ${env:GITLAB_TOKEN}\" \"${env:GITLAB_URL}/api/v4/ci/lint\" --form \"content=$(cat .gitlab-ci.yml)\" | jq '{valid: .valid, errors: .errors, warnings: .warnings}'",
+      "options": { "cwd": "${workspaceFolder}" },
+      "group": "test",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "problemMatcher": []
+    },
+    {
+      "label": "GitLab CI: Run Job Locally",
+      "type": "shell",
+      "command": "gitlab-runner exec docker ${input:jobName}",
+      "options": { "cwd": "${workspaceFolder}" },
+      "group": "test",
+      "presentation": { "reveal": "always", "panel": "new", "clear": true },
+      "problemMatcher": []
+    }
+  ],
+  "inputs": [
+    {
+      "id": "jobName",
+      "type": "promptString",
+      "description": "GitLab CI job name to run locally",
+      "default": "build"
     }
   ]
 }
