@@ -1,0 +1,20 @@
+# Source: https://github.com/thedotmack/claude-mem — session lifecycle hooks
+# Version: 1.0.0
+name: memory-session-save
+description: Append a session summary to the memory log when the agent finishes a task.
+
+on:
+  - agentHookStop
+
+instructions: |
+  Append a brief session note to .kiro/memory/session-log.md using this format:
+
+  ## [today's date] Session Note
+  **Context:** [what was being worked on]
+  **Key decisions:** [any non-obvious decisions made, with rationale]
+  **Findings:** [bugs found, patterns discovered, pitfalls identified]
+  **Unresolved:** [anything left open or to be continued]
+
+  Keep the entry under 10 lines. Do not repeat information already in the log
+  from today. If nothing significant happened, do not add an entry.
+  Create the file and directory if they do not exist.

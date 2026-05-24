@@ -1,0 +1,57 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "GitLab CI: Lint via API",
+      "type": "shell",
+      "command": "curl -s --header \"PRIVATE-TOKEN: ${env:GITLAB_TOKEN}\" \"${env:GITLAB_URL}/api/v4/ci/lint\" --form \"content=$(cat .gitlab-ci.yml)\" | jq '{valid: .valid, errors: .errors, warnings: .warnings}'",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "clear": false
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "GitLab CI: Visualize Pipeline (local)",
+      "type": "shell",
+      "command": "gitlab-runner exec shell --help 2>&1 | head -5 && echo '---' && cat .gitlab-ci.yml | python3 -c \"import sys,yaml,json; d=yaml.safe_load(sys.stdin); stages=d.get('stages',['test']); [print(f'Stage {s}: ' + ', '.join(k for k,v in d.items() if isinstance(v,dict) and v.get('stage','')==s)) for s in stages]\"",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "GitLab CI: Run Single Job Locally",
+      "type": "shell",
+      "command": "gitlab-runner exec docker ${input:jobName}",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new",
+        "clear": true
+      },
+      "problemMatcher": []
+    }
+  ],
+  "inputs": [
+    {
+      "id": "jobName",
+      "type": "promptString",
+      "description": "GitLab CI job name to run locally",
+      "default": "build"
+    }
+  ]
+}

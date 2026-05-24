@@ -1,0 +1,24 @@
+# Source: https://github.com/safishamsi/graphify — graphify post-change hook
+# Version: 1.0.0
+name: graphify-rebuild
+description: Incrementally rebuild the knowledge graph when source files change.
+
+on:
+  - fileChanged
+
+trigger:
+  command: python -m graphify . --update --quiet
+  paths:
+    - "**/*.ts"
+    - "**/*.html"
+    - "**/*.scss"
+    - "**/*.py"
+    - "**/*.md"
+    - "angular.json"
+    - "tsconfig*.json"
+
+instructions: |
+  The codebase knowledge graph has been updated to reflect recent file changes.
+  If the user asks about component structure, module relationships, or dependency
+  impact analysis, read graphify-out/GRAPH_REPORT.md before responding.
+  Do not mention this hook ran unless the user asks about graph status.

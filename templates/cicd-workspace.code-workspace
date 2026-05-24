@@ -1,0 +1,83 @@
+{
+  // Template: copy to ~/workspace/ and adjust paths.
+  // Open with: code cicd-dev.code-workspace
+  // NOTE: Copilot @workspace only searches the first folder — use #codebase instead.
+  "folders": [
+    {
+      "name": "CI/CD — main",
+      "path": "../cicd-repo"
+    },
+    {
+      "name": "CI/CD — feature (worktree)",
+      "path": "../cicd-feat-REPLACE-ME"
+    },
+    {
+      "name": "Angular Monorepo (reference)",
+      "path": "../angular-monorepo"
+    }
+  ],
+  "settings": {
+    "git.autofetch": true,
+    "git.autofetchPeriod": 180,
+    "editor.formatOnSave": true,
+    "editor.rulers": [120],
+    "files.associations": {
+      "Jenkinsfile": "groovy",
+      "Jenkinsfile.*": "groovy",
+      "*.Jenkinsfile": "groovy"
+    },
+    "yaml.schemas": {
+      "https://json.schemastore.org/gitlab-ci": ".gitlab-ci.yml"
+    }
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Jenkins: Lint Declarative Jenkinsfile",
+        "type": "shell",
+        "command": "java -jar ${env:JENKINS_CLI_JAR} -s ${env:JENKINS_URL} declarative-linter < ${file}",
+        "group": "test",
+        "presentation": { "reveal": "always", "panel": "shared" },
+        "problemMatcher": []
+      },
+      {
+        "label": "Jenkins: Groovy Syntax Check (active file)",
+        "type": "shell",
+        "command": "groovy -c ${file}",
+        "group": "test",
+        "presentation": { "reveal": "always", "panel": "shared" },
+        "problemMatcher": []
+      },
+      {
+        "label": "Jenkins: Run Shared Library Tests",
+        "type": "shell",
+        "command": "./gradlew test",
+        "options": {
+          "cwd": "${workspaceFolder:CI/CD — main}/jenkins/shared-library"
+        },
+        "group": "test",
+        "presentation": { "reveal": "always", "panel": "new", "clear": true },
+        "problemMatcher": []
+      },
+      {
+        "label": "GitLab CI: Lint via API",
+        "type": "shell",
+        "command": "curl -s --header \"PRIVATE-TOKEN: ${env:GITLAB_TOKEN}\" \"${env:GITLAB_URL}/api/v4/ci/lint\" --form \"content=$(cat ${file})\" | jq '{valid: .valid, errors: .errors}'",
+        "group": "test",
+        "presentation": { "reveal": "always", "panel": "shared" },
+        "problemMatcher": []
+      }
+    ]
+  },
+  "extensions": {
+    "recommendations": [
+      "github.copilot",
+      "github.copilot-chat",
+      "eamodio.gitlens",
+      "redhat.vscode-yaml",
+      "marlon407.code-groovy",
+      "davidanson.vscode-markdownlint"
+    ]
+  }
+}

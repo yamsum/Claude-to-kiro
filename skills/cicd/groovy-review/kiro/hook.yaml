@@ -1,0 +1,22 @@
+# Source: https://github.com/yamsum/claude-to-kiro — cicd/groovy-review hook
+# Version: 1.0.0
+name: groovy-review-on-change
+description: Prompt a Groovy review when Jenkinsfiles or shared library files are modified.
+
+on:
+  - fileChanged
+
+trigger:
+  paths:
+    - "**/Jenkinsfile"
+    - "**/Jenkinsfile.*"
+    - "**/*.groovy"
+
+instructions: |
+  A Jenkins pipeline or shared library file was just modified.
+  If the user asks you to review the change, follow the Groovy review workflow
+  in .kiro/steering/40-groovy-review.md (or the equivalent installed path).
+
+  Do not run the full review automatically — wait for the user to ask.
+  You may proactively note: "Groovy file changed. Want me to review it for
+  CPS, credential exposure, and sandbox issues?"
